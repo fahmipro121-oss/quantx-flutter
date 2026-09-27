@@ -1,0 +1,50 @@
+name: Build QuantX APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout kode kita (lib/, pubspec.yaml)
+        uses: actions/checkout@v4
+        with:
+          path: source
+
+      - name: Install Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+
+      # Kerangka Android/iOS dibikin FRESH pake Flutter asli tiap build,
+      # bukan ditulis manual — supaya selalu cocok versi Gradle/AGP-nya.
+      - name: Buat kerangka project Flutter baru
+        run: flutter create --org com.quantx --project-name quantx_app scaffold
+
+      - name: Timpa kerangka pake kode kita
+        run: |
+          cp source/pubspec.yaml scaffold/pubspec.yaml
+          rm -rf scaffold/lib
+          cp -r source/lib scaffold/lib
+
+      - name: Ambil dependency
+        working-directory: scaffold
+        run: flutter pub get
+
+      - name: Generate launcher icon dari assets/icon.png
+        working-directory: scaffold
+        run: dart run flutter_launcher_icons
+
+      - name: Build APK (release)
+        working-directory: scaffold
+        run: flutter build apk --release
+
+      - name: Upload APK sebagai artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: quantx-app-apk
+          path: scaffold/build/app/outputs/flutter-apk/app-release.apk
