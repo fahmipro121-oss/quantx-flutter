@@ -30,6 +30,8 @@ jobs:
           cp source/pubspec.yaml scaffold/pubspec.yaml
           rm -rf scaffold/lib
           cp -r source/lib scaffold/lib
+          rm -rf scaffold/assets
+          cp -r source/assets scaffold/assets
 
       - name: Ambil dependency
         working-directory: scaffold
