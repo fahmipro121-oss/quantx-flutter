@@ -17,7 +17,6 @@ jobs:
       - name: Install Flutter SDK
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
           channel: 'stable'
 
       # Kerangka Android/iOS dibikin FRESH pake Flutter asli tiap build,
