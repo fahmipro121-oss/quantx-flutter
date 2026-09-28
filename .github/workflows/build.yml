@@ -27,6 +27,21 @@ jobs:
       - name: Ganti nama tampilan app jadi "QUANTX"
         run: sed -i 's/android:label="quantx_app"/android:label="QUANTX"/' scaffold/android/app/src/main/AndroidManifest.xml
 
+      # Template `flutter create` cuma masang izin INTERNET di manifest
+      # debug/profile, BUKAN di manifest utama yang dipakai build release.
+      # Tanpa ini APK release nggak boleh akses internet sama sekali —
+      # gejalanya WebView nampilin "net::ERR_CACHE_MISS" / nggak bisa connect
+      # walaupun server-nya sehat. Ada pengecekan di bawah biar kalau
+      # izinnya sampai nggak kepasang, build langsung gagal (bukan diem-diem
+      # lolos jadi APK yang nggak bisa konek).
+      - name: Tambah izin INTERNET ke manifest utama
+        run: |
+          F=scaffold/android/app/src/main/AndroidManifest.xml
+          sed -i 's|<application|<uses-permission android:name="android.permission.INTERNET"/>\n    <application|' "$F"
+          grep -q 'android.permission.INTERNET' "$F" || { echo "GAGAL: izin INTERNET nggak kepasang di manifest"; exit 1; }
+          echo "=== AndroidManifest.xml final ==="
+          cat "$F"
+
       - name: Timpa kerangka pake kode kita
         run: |
           cp source/pubspec.yaml scaffold/pubspec.yaml

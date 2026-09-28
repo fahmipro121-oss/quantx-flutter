@@ -61,15 +61,8 @@ class _QuantXWebViewState extends State<QuantXWebView> {
             }
           },
         ),
-      );
-    // BUG FIX: "net::ERR_CACHE_MISS" muncul di sebagian WebView Android pas
-    // load pertama kali abis fresh-install — cache HTTP internalnya belum
-    // sempet ke-inisialisasi pas request pertama ditembak. Bersihin cache
-    // dulu sebelum load pertama biar WebView mulai dari kondisi bersih,
-    // bukan nyoba baca dari cache yang belum ada isinya.
-    controller.clearCache().then((_) {
-      controller.loadRequest(Uri.parse(quantxUrl));
-    });
+      )
+      ..loadRequest(Uri.parse(quantxUrl));
   }
 
   void _retry() {
