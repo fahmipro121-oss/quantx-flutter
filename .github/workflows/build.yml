@@ -24,6 +24,9 @@ jobs:
       - name: Buat kerangka project Flutter baru
         run: flutter create --org com.quantx --project-name quantx_app scaffold
 
+      - name: Ganti nama tampilan app jadi "QUANTX"
+        run: sed -i 's/android:label="quantx_app"/android:label="QUANTX"/' scaffold/android/app/src/main/AndroidManifest.xml
+
       - name: Timpa kerangka pake kode kita
         run: |
           cp source/pubspec.yaml scaffold/pubspec.yaml
