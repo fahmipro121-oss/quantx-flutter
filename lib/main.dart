@@ -49,9 +49,16 @@ class _QuantXWebViewState extends State<QuantXWebView> {
         NavigationDelegate(
           // Kalau server lagi mati/nggak bisa dihubungi (misal Termux-nya
           // lagi off), tampilin layar error rapi + tombol coba lagi —
-          // bukan halaman error mentah bawaan Android.
+          // bukan halaman error mentah bawaan Android. PENTING: cuma
+          // reagen kalau yang gagal itu HALAMAN UTAMANYA (isForMainFrame),
+          // bukan tiap resource kecil di dalam halaman (gambar, satu
+          // panggilan data yang sempet timeout, dll) — kalau nggak
+          // dibatesin gini, satu request kecil gagal aja bakal nutupin
+          // seluruh dashboard yang sebenernya udah kebuka normal.
           onWebResourceError: (error) {
-            if (mounted) setState(() => hasError = true);
+            if (mounted && error.isForMainFrame != false) {
+              setState(() => hasError = true);
+            }
           },
         ),
       );
